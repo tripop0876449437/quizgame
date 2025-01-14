@@ -41,18 +41,10 @@ const Result = ({ topic, answers, totalTopics }) => {
           </Link>
 
           {/* ปุ่มตอนถัดไป (ไม่แสดงในตอนที่ 5) */}
-          {/* {topic.id < totalTopics && (
-            <Link
-              to={`/topic/${topic.id + 1}/question/1`}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg border-4 border-green-800"
-            >
-              เลือกตอนถัดไป
-            </Link>
-          )} */}
           {topic.id < 5 && (
             <Link
-              to={`/topic/${topic.id + 1}/question/1`}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg border-4 border-green-800"
+            to={`/topic/${topic.id + 1}/question/1`}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg border-4 border-green-800"
             >
               เลือกตอนถัดไป
             </Link>
@@ -64,3 +56,12 @@ const Result = ({ topic, answers, totalTopics }) => {
 };
 
 export default Result;
+
+{/* {topic.id < totalTopics && (
+  <Link
+    to={`/topic/${topic.id + 1}/question/1`}
+    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg border-4 border-green-800"
+  >
+    เลือกตอนถัดไป
+  </Link>
+)} */}

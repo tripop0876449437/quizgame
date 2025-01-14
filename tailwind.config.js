@@ -10,7 +10,9 @@ export default {
         'quiz-bg': "url('/src/assets/Night.jpg')", // ระบุเส้นทางของรูปภาพ
       },
       fontFamily: {
-        sans: ['Prompt', 'sans-serif'], // กำหนดฟอนต์หลัก
+        sans: ['Prompt', 'sans-serif'], 
+        // kanit: ['Kanit', 'sans-serif'], 
+        // sriracha: ['Sriracha', 'cursive'], 
       },
     },
   },
