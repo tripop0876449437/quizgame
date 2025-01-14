@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Question from './pages/Question';
 import Result from './pages/Result';
@@ -9,6 +9,7 @@ import Logins from './pages/Login';
 
 function App() {
   const [answers, setAnswers] = useState({}); // เก็บคำตอบทั้งหมด
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // เก็บสถานะการล็อกอิน
 
   const handleAnswer = (questionId, answer) => {
     setAnswers((prev) => ({
@@ -50,7 +51,13 @@ function App() {
             element={<Result topic={topic} answers={answers} />}
           />
         ))}
-        <Route path="/" element={<Home />} />
+        {/* Private Route สำหรับหน้า Home */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Home /> : <Navigate to="/login" />
+          }
+        />
         {/* เส้นทางหน้าผลลัพธ์ */}
         {questionsData.map((topic) => (
           <Route
@@ -65,7 +72,11 @@ function App() {
             }
           />
         ))}
-        <Route path='/login' element={<Logins />} />
+        {/* หน้า Login */}
+        <Route
+          path="/login"
+          element={<Logins setIsAuthenticated={setIsAuthenticated} />}
+        />
       </Routes>
     </Router>
   );
