@@ -1,57 +1,32 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 const Question = ({ question, onAnswer, nextPath }) => {
   const navigate = useNavigate();
 
   const handleAnswerClick = (answer) => {
-    onAnswer(question.id, answer); // เก็บคำตอบ
-    navigate(nextPath); // ไปหน้าถัดไป
+    onAnswer(question.id, answer); // บันทึกคำตอบ
+    navigate(`/explanation/${question.id}`, { state: { question, selectedAnswer: answer, nextPath } });
   };
 
   return (
-    <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center">
-      <div className="flex items-center justify-center h-full flex-col px-4">
-        {/* แสดงหมายเลขคำถาม */}
-        <div className="absolute top-10 left-10 bg-red-600 text-white text-xl px-4 py-2 rounded-lg">
-          {question.id}
-        </div>
-
-        {/* คำถาม */}
-        <h1 className="text-white text-3xl md:text-5xl font-bold text-center max-w-4xl leading-normal w-3/4 md:w-full">
-          {question.question}
-        </h1>
-
-        {/* เว้นระยะ */}
-        <div className="mt-10"></div>
-
-        {/* ตัวเลือกคำตอบ */}
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 w-3/4 md:w-full max-w-3xl">
-          {question.options.map((option) => (
-            <li key={option}>
-              <button
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-4 rounded-lg shadow-lg w-full text-lg md:text-2xl"
-                onClick={() => handleAnswerClick(option)}
-              >
-                {option}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex flex-col items-center justify-center text-white">
+      <h1 className="text-2xl md:text-4xl font-bold mb-6 px-10 text-center">{question.question}</h1>
+      <div className="h-5"></div>
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-lg px-10">
+        {question.options.map((option) => (
+          <li key={option}>
+            <button
+              onClick={() => handleAnswerClick(option)}
+              className="bg-red-500 text-white py-3 px-4 rounded-lg w-full text-lg md:text-xl font-semibold shadow-lg hover:bg-blue-600 transition-all"
+            >
+              {option}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-};
-
-Question.propTypes = {
-  question: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    question: PropTypes.string.isRequired,
-    options: PropTypes.arrayOf(PropTypes.string).isRequired,
-    answer: PropTypes.string,
-  }).isRequired,
-  onAnswer: PropTypes.func.isRequired,
-  nextPath: PropTypes.string.isRequired,
 };
 
 export default Question;

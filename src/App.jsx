@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Question from './pages/Question';
+import Explanation from './pages/Explanation';
 import Result from './pages/Result';
 import TopicSelection from './pages/TopicSelection';
-import questionsData from './data/questions.json'; // อิมพอร์ตข้อมูลคำถาม
+import questionsData from './data/questions.json';
 import Logins from './pages/Login';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   const [answers, setAnswers] = useState({}); // เก็บคำตอบทั้งหมด
@@ -20,9 +22,10 @@ function App() {
 
   return (
     <Router>
-      {/* หน้าเลือกตอน */}
       <Routes>
+        {/* หน้าเลือกตอน */}
         <Route path="/topics" element={<TopicSelection />} />
+
         {/* เส้นทางสำหรับคำถาม */}
         {questionsData.map((topic) =>
           topic.questions.map((q, index) => (
@@ -43,7 +46,12 @@ function App() {
             />
           ))
         )}
-        {/* เส้นทางสำหรับหน้าผลลัพธ์ของแต่ละตอน */}
+
+
+        {/* เส้นทางสำหรับหน้าเฉลย */}
+        <Route path="/explanation/:id" element={<Explanation />} />
+
+        {/* เส้นทางสำหรับหน้าผลลัพธ์ */}
         {questionsData.map((topic) => (
           <Route
             key={topic.id}
@@ -51,27 +59,17 @@ function App() {
             element={<Result topic={topic} answers={answers} />}
           />
         ))}
+
         {/* Private Route สำหรับหน้า Home */}
         <Route
           path="/"
           element={
-            isAuthenticated ? <Home /> : <Navigate to="/login" />
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <Home />
+            </PrivateRoute>
           }
         />
-        {/* เส้นทางหน้าผลลัพธ์ */}
-        {questionsData.map((topic) => (
-          <Route
-            key={topic.id}
-            path={`/topic/${topic.id}/result`}
-            element={
-              <Result
-                topic={topic}
-                answers={answers}
-                totalTopics={questionsData.length} // ส่งจำนวนตอนทั้งหมด
-              />
-            }
-          />
-        ))}
+
         {/* หน้า Login */}
         <Route
           path="/login"
