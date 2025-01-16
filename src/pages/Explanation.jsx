@@ -39,7 +39,7 @@ const Explanation = () => {
       {nextPath && (
         <button
           onClick={() => navigate(nextPath)}
-          className="bg-red-600 text-white px-6 py-3 mt-6 rounded-lg hover:bg-blue-700 transition-all"
+          className="bg-red-600 text-white px-6 py-3 mt-6 rounded-lg hover:bg-red-700 transition-all"
         >
           ไปข้อต่อไป
         </button>
