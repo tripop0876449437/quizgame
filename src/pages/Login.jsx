@@ -2,18 +2,18 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
-import { auth, googleProvider, facebookProvider, signInWithPopup, db, setDoc, doc, getDoc } from '../firebase';
+import { auth, googleProvider, facebookProvider, signInWithPopup, db, setDoc, doc } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const Login = () => {
   const navigate = useNavigate();
 
-  // ตรวจสอบสถานะผู้ใช้
+  // ตรวจสอบสถานะผู้ใช้ที่ล็อกอิน
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log('User is already logged in:', user);
-        navigate('/players'); // Redirect ไปหน้า Players
+        navigate('/players'); // Redirect ไปหน้าผู้เล่น
       }
     });
 
@@ -22,23 +22,15 @@ const Login = () => {
 
   const saveUserToFirestore = async (user) => {
     try {
-      const userRef = doc(db, 'players', user.uid);
-      const userDoc = await getDoc(userRef);
-
-      if (!userDoc.exists()) {
-        // บันทึกข้อมูลเฉพาะผู้ใช้ใหม่
-        await setDoc(userRef, {
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          uid: user.uid,
-          score: 0, // กำหนดคะแนนเริ่มต้น
-          timestamp: new Date(),
-        });
-        console.log('New user saved to Firestore');
-      } else {
-        console.log('User already exists in Firestore');
-      }
+      // บันทึกข้อมูลผู้เล่นใน Firestore
+      await setDoc(doc(db, 'players', user.uid), {
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.uid,
+        timestamp: new Date(),
+      });
+      console.log('User saved to Firestore');
     } catch (error) {
       console.error('Error saving user to Firestore:', error);
     }
@@ -47,10 +39,12 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const user = result.user; // ข้อมูลผู้ใช้
+      console.log('Google User:', user);
+
       await saveUserToFirestore(user); // บันทึกข้อมูลผู้ใช้ใน Firestore
       alert(`Welcome, ${user.displayName}`);
-      navigate('/players'); // Redirect ไปหน้า Players
+      navigate('/players'); // Redirect ไปหน้าผู้เล่น
     } catch (error) {
       console.error('Error during Google Login:', error);
       alert('Google Login Failed.');
@@ -60,10 +54,12 @@ const Login = () => {
   const handleFacebookLogin = async () => {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
-      const user = result.user;
+      const user = result.user; // ข้อมูลผู้ใช้
+      console.log('Facebook User:', user);
+
       await saveUserToFirestore(user); // บันทึกข้อมูลผู้ใช้ใน Firestore
       alert(`Welcome, ${user.displayName}`);
-      navigate('/players'); // Redirect ไปหน้า Players
+      navigate('/players'); // Redirect ไปหน้าผู้เล่น
     } catch (error) {
       console.error('Error during Facebook Login:', error);
       alert('Facebook Login Failed.');
@@ -72,32 +68,29 @@ const Login = () => {
 
   return (
     <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex flex-col items-center justify-center">
-      {/* <h1 className="text-white text-5xl text-center md:text-7xl font-bold tracking-widest">HOW TO PLAY</h1> */}
-      {/* ชื่อเกม */}
-      <h1 className="text-white text-center text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-        <span className="bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600 text-transparent bg-clip-text">
-          Game คำถาม?
-        </span>
-        <br />
-        <span className="text-blue-300 drop-shadow-lg">
-          ผจญภัยในโลกดิจิตอล
-        </span>
+      {/* หัวข้อหลัก */}
+      <h1 className="text-white text-5xl text-center md:text-7xl font-bold tracking-widest">
+        HOW TO PLAY
       </h1>
       <p className="text-red-400 text-xl md:text-2xl mt-4">LOGIN GAME</p>
 
+      {/* ปุ่มล็อกอิน */}
       <div className="flex flex-col items-center mt-10 gap-4">
+        {/* ปุ่ม Google */}
         <button
           className="bg-red-600 text-white font-semibold text-xl md:text-2xl py-4 px-10 rounded-lg shadow-lg hover:bg-red-700 transition-all flex items-center gap-4"
           onClick={handleGoogleLogin}
         >
           <FontAwesomeIcon icon={faGoogle} size="lg" /> LOGIN GOOGLE
         </button>
-        {/* <button
+
+        {/* ปุ่ม Facebook */}
+        <button
           className="bg-blue-600 text-white font-semibold text-xl md:text-2xl py-4 px-10 rounded-lg shadow-lg hover:bg-blue-700 transition-all flex items-center gap-4"
           onClick={handleFacebookLogin}
         >
           <FontAwesomeIcon icon={faFacebook} size="lg" /> LOGIN FACEBOOK
-        </button> */}
+        </button>
       </div>
     </div>
   );
