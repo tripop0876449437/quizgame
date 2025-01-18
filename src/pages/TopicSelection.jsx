@@ -6,7 +6,7 @@ const TopicSelection = () => {
     <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center">
       <div className="flex flex-col items-center justify-center h-full text-white">
         <h1 className="text-4xl font-bold mb-8">เลือกระดับตอนเกม</h1>
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 w-2/4">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-1 md:gap-6 w-3/4">
           {questionsData.map((topic) => (
             <Link
               key={topic.id}
@@ -17,6 +17,13 @@ const TopicSelection = () => {
             </Link>
           ))}
         </div>
+        <div className="h-2"></div>
+        <Link
+          to="/"
+          className="bg-blue-600 text-white text-2xl md:text-3xl font-semibold py-4 px-12 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
+        >
+          กลับไปหน้าโปรไฟล์
+        </Link>
       </div>
     </div>
   );
