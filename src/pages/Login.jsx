@@ -85,12 +85,12 @@ const Login = () => {
         </button>
 
         {/* ปุ่ม Facebook */}
-        <button
+        {/* <button
           className="bg-blue-600 text-white font-semibold text-xl md:text-2xl py-4 px-10 rounded-lg shadow-lg hover:bg-blue-700 transition-all flex items-center gap-4"
           onClick={handleFacebookLogin}
         >
           <FontAwesomeIcon icon={faFacebook} size="lg" /> LOGIN FACEBOOK
-        </button>
+        </button> */}
       </div>
     </div>
   );
