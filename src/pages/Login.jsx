@@ -69,8 +69,15 @@ const Login = () => {
   return (
     <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex flex-col items-center justify-center">
       {/* หัวข้อหลัก */}
-      <h1 className="text-white text-5xl text-center md:text-7xl font-bold tracking-widest">
-        HOW TO PLAY
+      {/* ชื่อเกม */}
+      <h1 className="text-white text-center text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+        <span className="bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600 text-transparent bg-clip-text">
+          Game คำถาม?
+        </span>
+        <br />
+        <span className="text-blue-300 drop-shadow-lg">
+          ผจญภัยในโลกดิจิตอล
+        </span>
       </h1>
       <p className="text-red-400 text-xl md:text-2xl mt-4">LOGIN GAME</p>
 
