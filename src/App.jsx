@@ -9,6 +9,7 @@ import questionsData from './data/questions.json';
 import Logins from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
 import Players from './pages/Players';
+import Register from './pages/Register';
 
 function App() {
   const [answers, setAnswers] = useState({}); // เก็บคำตอบทั้งหมด
@@ -77,6 +78,7 @@ function App() {
           element={<Logins setIsAuthenticated={setIsAuthenticated} />}
         />
         <Route path="/players" element={<Players />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

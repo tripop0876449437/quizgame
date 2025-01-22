@@ -1,107 +1,112 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const [name, setName] = useState(''); // เก็บชื่อ
+  const [username, setUsername] = useState(''); // เก็บ Username
+  const [password, setPassword] = useState(''); // เก็บ Password
+  const [error, setError] = useState(''); // เก็บข้อความ Error
+  const [success, setSuccess] = useState(''); // เก็บข้อความสำเร็จ
 
-  // จัดการการเปลี่ยนค่าในฟอร์ม
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // ส่งข้อมูลไปยัง API
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // ป้องกันการรีเฟรชหน้า
-    setError(null); // ล้างข้อความแสดงข้อผิดพลาด
+  const handleRegister = async (e) => {
+    e.preventDefault(); // ป้องกันการ Refresh หน้า
+    setError(''); // ล้างข้อความ Error ก่อนเริ่ม
+    setSuccess(''); // ล้างข้อความ Success ก่อนเริ่ม
 
     try {
-      const response = await axios.post('https://apiquizgame.vercel.app/register', formData);
-      console.log('Register Success:', response.data);
-      setSuccess(true);
+      // เรียก API Register
+      const response = await fetch('https://apiquizgame.vercel.app/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          username,
+          password,
+        }),
+      });
 
-      // Redirect ไปหน้า Login หลังจากลงทะเบียนสำเร็จ
+      if (!response.ok) {
+        throw new Error('Registration failed. Please try again.');
+      }
+
+      const data = await response.json(); // ข้อมูลที่ได้จาก API
+      console.log('User registered:', data);
+
+      // แสดงข้อความสำเร็จ และ Redirect ไปหน้า Login
+      setSuccess('Registration successful! Redirecting to login...');
       setTimeout(() => {
-        navigate('/login');
+        navigate('/login'); // Redirect หลังลงทะเบียนสำเร็จ
       }, 2000);
     } catch (error) {
-      console.error('Register Error:', error);
-      setError(error.response?.data?.message || 'Registration failed');
+      console.error('Error during registration:', error);
+      setError('Registration failed. Please check your information.');
     }
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-900 flex flex-col items-center justify-center text-white">
-      <h1 className="text-4xl font-bold mb-6">Register</h1>
+    <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex flex-col items-center justify-center">
+      {/* หัวข้อหลัก */}
+      <h1 className="text-white text-center text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+        <span className="bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600 text-transparent bg-clip-text">
+          Register
+        </span>
+        <br />
+        <span className="text-blue-300 drop-shadow-lg">สร้างบัญชีใหม่</span>
+      </h1>
 
       {/* ฟอร์มลงทะเบียน */}
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
-        <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-semibold">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full mt-2 p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-semibold">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full mt-2 p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-semibold">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full mt-2 p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring focus:ring-blue-500"
-            required
-          />
-        </div>
+      <form onSubmit={handleRegister} className="flex flex-col items-center mt-6 gap-4">
+        {/* ชื่อ */}
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-64 md:w-80 py-3 px-4 rounded-lg shadow-md text-gray-800"
+          required
+        />
 
-        {/* ข้อความแสดงข้อผิดพลาด */}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {/* Username */}
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-64 md:w-80 py-3 px-4 rounded-lg shadow-md text-gray-800"
+          required
+        />
 
-        {/* ข้อความสำเร็จ */}
-        {success && <p className="text-green-500 text-sm mb-4">Registration successful! Redirecting to login...</p>}
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-64 md:w-80 py-3 px-4 rounded-lg shadow-md text-gray-800"
+          required
+        />
 
+        {/* ข้อความแสดงสถานะ */}
+        {error && <p className="text-red-500">{error}</p>}
+        {success && <p className="text-green-500">{success}</p>}
+
+        {/* ปุ่มลงทะเบียน */}
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition-all"
+          className="bg-blue-500 text-white font-semibold text-xl py-3 px-10 rounded-lg shadow-lg hover:bg-blue-600 transition-all"
         >
           Register
         </button>
       </form>
+
+      {/* ปุ่มกลับไปหน้า Login */}
+      <button
+        onClick={() => navigate('/login')}
+        className="mt-6 text-blue-300 underline hover:text-blue-400"
+      >
+        Already have an account? Login
+      </button>
     </div>
   );
 };

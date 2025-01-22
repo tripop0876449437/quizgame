@@ -1,38 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
-import player from '../assets/player.png'
-import { Link } from 'react-router-dom';
+import player from '../assets/player.png';
 
 const Players = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null); // เก็บข้อมูลผู้ใช้
+  const [loading, setLoading] = useState(true); // สถานะการโหลดข้อมูล
 
   useEffect(() => {
-    // ดึงข้อมูลผู้ใช้จาก Firebase Authentication
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser); // ตั้งค่าผู้ใช้
-    } else {
-      // หากยังไม่ได้ล็อกอิน ให้ Redirect ไปหน้า Login
-      navigate('/login');
-    }
+    const fetchUser = () => {
+      const token = localStorage.getItem('authToken');
+      const currentUser = auth.currentUser;
+
+      if (token) {
+        // หากมี token แสดงว่าผู้ใช้ล็อกอินผ่าน Username/Password
+        console.log('Using token for authentication');
+        setUser({
+          displayName: 'Player (from token)', // คุณสามารถ Decode JWT เพื่อนำข้อมูลผู้ใช้มาแสดง
+          photoURL: player, // ใช้รูปเริ่มต้นหรือปรับเปลี่ยนตามข้อมูลที่ Decode ได้
+        });
+      } else if (currentUser) {
+        // หากมีข้อมูลใน auth.currentUser แสดงว่าล็อกอินผ่าน Firebase
+        console.log('Using Firebase user authentication');
+        setUser(currentUser);
+      } else {
+        // หากไม่มีข้อมูลทั้งสอง Redirect ไปที่ /login
+        navigate('/login');
+      }
+
+      setLoading(false); // สิ้นสุดการโหลด
+    };
+
+    fetchUser();
   }, [navigate]);
 
-  // ฟังก์ชันเมื่อกดปุ่ม Next
   const handleNext = () => {
     navigate('/topics'); // Redirect ไปหน้าเลือกตอน
   };
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      alert('Logged out successfully!');
-      navigate('/login'); // Redirect ไปหน้า Login
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
+  const handleLogout = () => {
+    // ลบข้อมูลผู้ใช้และ Redirect ไปที่ /login
+    localStorage.removeItem('authToken');
+    auth.signOut().catch((error) => console.error('Error during logout:', error));
+    alert('Logged out successfully!');
+    navigate('/login');
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex items-center justify-center text-white">
+        <h1 className="text-4xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen bg-quiz-bg bg-cover bg-center flex flex-col items-center justify-center">
@@ -43,41 +64,32 @@ const Players = () => {
 
       {/* รูปภาพและชื่อผู้เล่น */}
       <div className="flex flex-col items-center mb-10">
-        {/* รูปโปรไฟล์ผู้เล่น */}
         <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
-          {user?.photoURL ? (
-            <img
-              src={user.photoURL} // แสดงรูปจาก photoURL
-              alt="User Avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-6xl text-gray-500">
-              <img src={player} alt="" srcset="" />
-            </span> // ไอคอนเริ่มต้นหากไม่มีรูป
-          )}
+          <img
+            src={user?.photoURL || player}
+            alt="User Avatar"
+            className="w-full h-full object-cover"
+          />
         </div>
-
-        {/* ชื่อผู้เล่น */}
         <p className="mt-4 text-white text-xl md:text-2xl font-semibold bg-red-600 py-1 px-4 rounded-full shadow-lg">
-          {user?.displayName || 'Player'} {/* แสดงชื่อผู้เล่น */}
+          {user?.displayName || 'Player'}
         </p>
       </div>
 
-      {/* ปุ่ม Next */}
+      {/* ปุ่ม Next และ Logout */}
       <div className="flex flex-col gap-5">
         <button
           onClick={handleNext}
-          className="bg-red-600 text-white text-xl md:text-2xl py-3 px-10 rounded-lg shadow-lg hover:bg-red-700 transition-all flex items-center gap-4"
+          className="bg-red-600 text-white text-xl md:text-2xl py-3 px-10 rounded-lg shadow-lg hover:bg-red-700 transition-all"
         >
-          <span>➡️</span> NEXT TO
+          NEXT TO
         </button>
-        <Link
+        <button
           onClick={handleLogout}
-          className="bg-blue-600 text-white text-2xl md:text-3xl font-semibold py-4 px-12 rounded-lg shadow-lg hover:bg-blue-700 transition-all text-center"
+          className="bg-blue-600 text-white text-2xl md:text-3xl font-semibold py-4 px-12 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
         >
           Logout
-        </Link>
+        </button>
       </div>
     </div>
   );
